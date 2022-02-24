@@ -113,5 +113,8 @@ def get_clinical_data(project_id: str, output_file: str, number):
     """
     # TODO: Possible that they mean "NA" as one thing, and "not reported"
     # as another, but who cares.
+    if not Path(output_file).parent.exists():
+        Path(output_file).parent.mkdir()
+
     with Path(output_file).open("w+") as file:
         call_portal(project_id, number).fillna("not reported").to_csv(file)

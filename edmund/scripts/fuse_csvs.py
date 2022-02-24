@@ -53,7 +53,7 @@ def fuse_csvs(
         depth: int,
         max_depth: int,
         recurse: bool = True,
-    ):
+    ): 
         if depth > max_depth:
             raise RecursionError("Exceeded max search depth")
         assert path.is_dir()
@@ -99,9 +99,9 @@ def fuse_csvs(
 @click.option(
     "-d",
     "--max_depth",
-    default=None,
+    default=100,
     type=int,
-    help="Specify maximum recursion depth before erroring. Defaults to unlimited",
+    help="Specify maximum recursion depth before erroring. Defaults to 100",
 )
 def fuse_csvs_command(target_directory, output, recurse, max_depth):
     """Fuse CSV files in a target folder
