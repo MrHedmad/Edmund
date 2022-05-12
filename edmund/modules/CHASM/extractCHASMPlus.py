@@ -16,7 +16,7 @@ import pandas as pd
 from statsmodels.stats.multitest import multipletests
 
 from edmund.entrypoint import cli
-from edmund.modules.dumpClinical import call_portal
+from edmund.modules.data_retrival.dumpClinical import call_portal
 from edmund.modules.utilities.fuse_csvs import fuse_csvs
 from edmund.utils import count_missing_rows, cqdm
 

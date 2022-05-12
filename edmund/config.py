@@ -1,6 +1,7 @@
 """This file loads the configuration of the module."""
 import logging
 import shutil
+import sys
 from copy import deepcopy
 from enum import Enum
 from pathlib import Path
@@ -44,7 +45,7 @@ def recursive_update(original: Mapping, new: Mapping) -> Mapping:
 
 
 log = logging.getLogger(__name__)
-default_config_path = Path(resource_filename(__name__, "default_config.yml"))
+default_config_path = Path(resource_filename(__name__, "resources/default_config.yml"))
 user_config_path = Path("$HOME/.config/edmund.yml")
 
 
@@ -53,8 +54,8 @@ def load_config():
         with default_config_path.open("r") as stream:
             default_config = yaml.safe_load(stream)
     except FileNotFoundError as err:
-        log.error("Cannot find the default config file (default-config.yml)")
-        raise
+        log.error("Cannot find the default config file (default-config.yml). Aborting.")
+        sys.exit(1)
 
     try:
         with user_config_path.open("r") as stream:
@@ -123,7 +124,6 @@ def change_config(log_path, console_verbosity, log_verbosity, reset, show_loadin
     """Change the module configuration"""
     # I know, I know, but it works and it's easy. Just this time, ok?
     global CONFIG
-    print(show_loading)
     if reset:
         # Reset all options, that is, regenerate the config file.
         log.info("Resetting configuration to defaults")
