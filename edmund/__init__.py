@@ -7,6 +7,8 @@ from pathlib import Path
 
 from edmund.config import CONFIG
 
+__VERSION__ = "0.0.1"
+
 # Save the path to here
 ROOT = Path(__file__).parent
 
