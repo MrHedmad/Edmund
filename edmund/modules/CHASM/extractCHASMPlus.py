@@ -5,21 +5,20 @@ more information on it.
 
 import logging
 import os
-import pickle
 from io import StringIO
 from itertools import zip_longest
 from pathlib import Path
 from shutil import rmtree
-from typing import Any, Iterator, Optional, Union
+from typing import Iterator, Optional, Union
 
 import click
 import pandas as pd
 from statsmodels.stats.multitest import multipletests
 
 from edmund.entrypoint import cli
-from edmund.scripts.dumpClinical import call_portal
-from edmund.scripts.fuse_csvs import fuse_csvs
-from edmund.utils import c, count_missing_rows, cqdm, uniques
+from edmund.modules.dumpClinical import call_portal
+from edmund.modules.utilities.fuse_csvs import fuse_csvs
+from edmund.utils import count_missing_rows, cqdm
 
 log = logging.getLogger(__name__)
 

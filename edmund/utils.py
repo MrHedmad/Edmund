@@ -1,5 +1,4 @@
-"""A collection of tools useful in the other scripts. The usual dependency
-is just Python 3.7.4
+"""A collection of tools useful in the other scripts.
 """
 import logging
 import math

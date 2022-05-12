@@ -7,7 +7,6 @@ from typing import IO, Optional, Union
 import click
 import numpy as np
 import pandas as pd
-from click.decorators import command
 
 from edmund.entrypoint import cli
 from edmund.utils import cqdm

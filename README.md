@@ -1,8 +1,10 @@
 # Edmund
 The wrapper to my python scripts.
 
-## Rebuild
 
+## Install
+Install Python 3.10 or later. Get Edmund from PyPI:
 ```bash
-git clone git@github.com:MrHedmad/Edmund.git
-cd Edmund
+pip install edmund
+```
+Invoke it with `edmund --help`.

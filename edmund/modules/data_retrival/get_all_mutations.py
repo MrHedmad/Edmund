@@ -1,12 +1,10 @@
-
-from io import StringIO
-from pathlib import Path
-import click
-
-import pandas as pd
-from tqdm import tqdm
-import requests
 import gzip
+from io import StringIO
+
+import click
+import pandas as pd
+import requests
+from tqdm import tqdm
 
 from edmund.entrypoint import cli
 
@@ -17,8 +15,8 @@ all_tcga_ids = [
     "LGG",
     "BRCA",
     "CESC",
-    "CHOL", 
-    "COAD",	
+    "CHOL",
+    "COAD",
     "ESCA",
     "GBM",
     "HNSC",
@@ -26,28 +24,31 @@ all_tcga_ids = [
     "KIRC",
     "KIRP",
     "LIHC",
-    "LUAD", 
+    "LUAD",
     "LUSC",
     "DLBC",
     "MESO",
-    "OV",	
+    "OV",
     "PAAD",
     "PCPG",
     "PRAD",
     "READ",
-    "SARC", 
+    "SARC",
     "SKCM",
     "STAD",
     "TGCT",
-    "THYM", 
+    "THYM",
     "THCA",
     "UCS",
     "UCEC",
-    "UVM"
+    "UVM",
 ]
 
 all_data = []
-endpoint = "https://gdc-hub.s3.us-east-1.amazonaws.com/download/TCGA-{}.mutect2_snv.tsv.gz"
+endpoint = (
+    "https://gdc-hub.s3.us-east-1.amazonaws.com/download/TCGA-{}.mutect2_snv.tsv.gz"
+)
+
 
 @cli.command()
 @click.argument("output_file", type=str)

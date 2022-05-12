@@ -53,7 +53,7 @@ def fuse_csvs(
         depth: int,
         max_depth: int,
         recurse: bool = True,
-    ): 
+    ):
         if depth > max_depth:
             raise RecursionError("Exceeded max search depth")
         assert path.is_dir()

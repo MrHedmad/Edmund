@@ -1,15 +1,14 @@
 """This file loads the configuration of the module."""
-import json
 import logging
 import shutil
 from copy import deepcopy
 from enum import Enum
 from pathlib import Path
 from typing import Mapping
-from pkg_resources import resource_filename
 
 import click
 import yaml
+from pkg_resources import resource_filename
 
 # Don't import the utils script here as it makes a circular import and
 # Python gets really really angry
@@ -156,7 +155,7 @@ def change_config(log_path, console_verbosity, log_verbosity, reset, show_loadin
     update_user_config(update)
     CONFIG = load_config()
     log.info(
-        "Finished changing configuration. Changes will be applied the next time the module is started."
+        "Finished changing configuration. Changes will be applied the next time Edmund is started."
     )
 
 

@@ -1,6 +1,5 @@
 import logging
 import os
-from importlib import resources, import_module
 from logging import StreamHandler
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
@@ -42,14 +41,15 @@ log.addHandler(file_h)
 log.addHandler(stream_h)
 
 
+import edmund.modules.CHASM.extractCHASMPlus
+import edmund.modules.CHASM.retrieve_lymph
+import edmund.modules.CHASM.vcf_speed_test
+
 # I do this like this because i cannot find an alternative and I've already
 # lost 3 fucking hours on this.
-import edmund.scripts.dumpClinical
-import edmund.scripts.extractCHASMPlus
-import edmund.scripts.findIDs
-import edmund.scripts.fuse_csvs
-import edmund.scripts.meltVCF
-import edmund.scripts.retrieveLymph
-import edmund.scripts.testtool
+import edmund.modules.data_retrival.dumpClinical
+import edmund.modules.data_retrival.get_all_mutations
+import edmund.modules.utilities.fuse_csvs
+import edmund.modules.utilities.melt_VCF
 
-# import edmund.scripts.
+# import edmund.modules.
