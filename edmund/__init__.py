@@ -49,6 +49,7 @@ import edmund.modules.CHASM.vcf_speed_test
 # lost 3 fucking hours on this.
 import edmund.modules.data_retrival.dumpClinical
 import edmund.modules.data_retrival.get_all_mutations
+import edmund.modules.run_gsea
 import edmund.modules.utilities.fuse_csvs
 import edmund.modules.utilities.melt_VCF
 
