@@ -25,10 +25,13 @@ import os
 import re
 from multiprocessing import cpu_count
 from pathlib import Path
+from pprint import pprint
+from copy import copy
 
 import click
 import gseapy as gsea
 import pandas as pd
+import numpy as np
 from matplotlib import table
 
 from edmund.entrypoint import cli
@@ -61,21 +64,25 @@ def find_deg_tables(
 
     cpattern = re.compile(pattern)
 
-    found_files = {}
-    for file in target.iterdir():
-        if file.is_dir() and recursive:
-            log.info(f"Looking in {file}...")
-            res = find_deg_tables(target=file, pattern=pattern, recursive=True)
-            found_files.update(res)
-            continue
+    def find_file_paths(target, pattern, recursive):
+        found_files = {}
+        for file in target.iterdir():
+            if file.is_dir() and recursive:
+                log.info(f"Looking in {file}...")
+                res = find_file_paths(target=file, pattern=pattern, recursive=True)
+                found_files.update(res)
+                continue
 
-        match = cpattern.match(file.name)
-        if match:
-            log.info(f"Found a matching file: {file}")
-            new_name = (
-                f"{file.parent.parent.name}_{match.groups()[0]}_{match.groups()[1]}"
-            )
-            found_files[new_name] = file
+            match = cpattern.match(file.name)
+            if match:
+                log.info(f"Found a matching file: {file}")
+                new_name = (
+                    f"{file.parent.parent.name}_{match.groups()[0]}_{match.groups()[1]}"
+                )
+                found_files[new_name] = file
+        return found_files
+    
+    found_files = find_file_paths(target=target, pattern=pattern, recursive=recursive)
 
     log.info(f"Found {len(found_files)} matching files.")
 
@@ -83,16 +90,16 @@ def find_deg_tables(
     for name, file in found_files.items():
         try:
             tables[name] = pd.read_csv(file, header=0)
-            log.info(",".join(tables[name].columns))
         # PANDAS DOES NOT EXPOSE ERRORS. Fuck me, right?
         except Exception as e:
             if e is KeyboardInterrupt:
                 raise
-            log.error(f"Got an error while trying to parse {file}: {e}. Ignoring it.")
+            log.error(f"Got an error while trying to parse {name}: {e}. Ignoring it.")
+            raise
             continue
 
     if tables == {}:
-        log.warn("Returning an empty dataset.")
+        log.debug("Returning an empty dataset.")
 
     return tables
 
@@ -138,10 +145,19 @@ def run_gsea(
 ):
     output_path = output_path.expanduser().absolute()
     tables = find_deg_tables(target_path, recursive=recursive_search)
-    results = {}
+    results = []
     if not output_path.exists():
         os.makedirs(output_path)
         log.info(f"Made {output_path}")
+    
+    gene_sets = pd.read_csv(target_gsea_sets).to_dict(orient="list")
+    # This has "nans" to pad for the different lengths
+    # We need to remove them.
+    for key, value in copy(gene_sets).items():
+        gene_sets[key] = [x for x in value if x is not np.nan]
+
+    gene_set_names = ", ".join(list(gene_sets.keys()))
+    log.info(f"Found {len(gene_sets)} gene sets: {gene_set_names}")
 
     for name, table in tables.items():
         log.info(f"Processing {name}...")
@@ -166,19 +182,24 @@ def run_gsea(
             os.makedirs(gsea_out_dir)
             log.info(f"Made {gsea_out_dir}")
 
+        available_cpus = cpu_count()
+        log.info(f"Running with {available_cpus} processes.")
         result = gsea.prerank(
             rnk,
-            gene_sets=target_gsea_sets,
+            gene_sets=gene_sets,
+            max_size=1000,
             outdir=str(gsea_out_dir),
-            processes=cpu_count(),
+            processes=available_cpus,
             verbose=True,
         )
         log.info("GSEA done.")
-        results[name] = pd.DataFrame.from_dict(results)
 
-        all_res = pd.concat(list(results.values()), ignore_index=True)
-        all_res.set_index(list(results.keys()))
-        all_res.to_csv(output_path / "All_GSEA_results.csv")
+        framed_results = pd.DataFrame(result.results).transpose()
+        framed_results["source"] = name
+        results.append(framed_results)
+    
+    results = pd.concat(results)
+    results.to_csv(output_path / "all_results.csv")
 
     log.info("Done.")
 
@@ -191,7 +212,7 @@ def run_gsea(
 @click.argument(
     "output_path", type=click.Path(file_okay=False, writable=True, path_type=Path)
 )
-@click.argument("target_gsea_sets")
+@click.argument("target_gsea_sets", type=click.Path(file_okay=True, exists=True, path_type=Path))
 @click.option("--score-statistic", default="t")
 @click.option("--save-rnk/--no-save-rnk", default=True)
 @click.option("--recursive-search/--no-recursive-search", default=True)
